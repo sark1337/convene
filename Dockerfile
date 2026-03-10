@@ -27,10 +27,14 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy standalone build with correct ownership
-COPY --from=builder --chown=1001:1001 /app/.next/standalone ./
-COPY --from=builder --chown=1001:1001 /app/.next/static ./.next/static
-COPY --from=builder --chown=1001:1001 /app/public ./public
+# Copy standalone build
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+# Fix all permissions - Next.js needs read access to traverse directories
+RUN chown -R 1001:1001 /app && \
+    chmod -R 755 /app
 
 # Switch to non-root user (required by ScoutOS)
 USER 1001
