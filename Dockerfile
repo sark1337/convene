@@ -41,5 +41,8 @@ USER 1001
 # Expose port (will be overridden by PORT env var)
 EXPOSE 3000
 
-# Start server
+# Set HOSTNAME for Next.js standalone (required for Docker)
+ENV HOSTNAME="0.0.0.0"
+
+# Start server - Next.js standalone respects PORT env var
 CMD ["node", "server.js"]
