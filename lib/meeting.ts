@@ -1,17 +1,16 @@
 import { nanoid } from "nanoid";
 import {
-  redis,
   setWithTTL,
   getAndRefresh,
   saddWithTTL,
   smembers,
   deleteKey,
   MEETING_TTL_SECONDS,
-} from "./redis";
+} from "./cache";
 import type { Meeting, Participant, CreateMeetingInput, AddParticipantInput } from "@/types";
 
-// Redis key helpers
-export const RedisKeys = {
+// Cache key helpers
+export const CacheKeys = {
   meeting: (id: string) => `meeting:${id}`,
   participants: (meetingId: string) => `meeting:${meetingId}:participants`,
   participant: (meetingId: string, participantId: string) =>
@@ -43,7 +42,7 @@ export async function createMeeting(input: CreateMeetingInput): Promise<Meeting>
     expiresAt,
   };
 
-  await setWithTTL(RedisKeys.meeting(id), meeting);
+  await setWithTTL(CacheKeys.meeting(id), meeting);
   return meeting;
 }
 
@@ -51,7 +50,7 @@ export async function createMeeting(input: CreateMeetingInput): Promise<Meeting>
  * Get a meeting by ID
  */
 export async function getMeeting(id: string): Promise<Meeting | null> {
-  return await getAndRefresh<Meeting>(RedisKeys.meeting(id));
+  return await getAndRefresh<Meeting>(CacheKeys.meeting(id));
 }
 
 /**
@@ -65,7 +64,7 @@ export async function updateMeeting(
   if (!meeting) return null;
 
   const updated = { ...meeting, ...updates };
-  await setWithTTL(RedisKeys.meeting(id), updated);
+  await setWithTTL(CacheKeys.meeting(id), updated);
   return updated;
 }
 
@@ -73,8 +72,8 @@ export async function updateMeeting(
  * Delete a meeting and all its participants
  */
 export async function deleteMeeting(id: string): Promise<void> {
-  await deleteKey(RedisKeys.meeting(id));
-  await deleteKey(RedisKeys.participants(id));
+  await deleteKey(CacheKeys.meeting(id));
+  await deleteKey(CacheKeys.participants(id));
 }
 
 /**
@@ -96,8 +95,8 @@ export async function addParticipant(
     submittedAt: now,
   };
 
-  await setWithTTL(RedisKeys.participant(meetingId, id), participant);
-  await saddWithTTL(RedisKeys.participants(meetingId), id);
+  await setWithTTL(CacheKeys.participant(meetingId, id), participant);
+  await saddWithTTL(CacheKeys.participants(meetingId), id);
 
   return participant;
 }
@@ -106,9 +105,9 @@ export async function addParticipant(
  * Get all participants for a meeting
  */
 export async function getParticipants(meetingId: string): Promise<Participant[]> {
-  const participantIds = await smembers(RedisKeys.participants(meetingId));
+  const participantIds = await smembers(CacheKeys.participants(meetingId));
   const participants = await Promise.all(
-    participantIds.map((id) => getAndRefresh<Participant>(RedisKeys.participant(meetingId, id)))
+    participantIds.map((id) => getAndRefresh<Participant>(CacheKeys.participant(meetingId, id)))
   );
   return participants.filter((p): p is Participant => p !== null);
 }
@@ -120,7 +119,7 @@ export async function getParticipant(
   meetingId: string,
   participantId: string
 ): Promise<Participant | null> {
-  return await getAndRefresh<Participant>(RedisKeys.participant(meetingId, participantId));
+  return await getAndRefresh<Participant>(CacheKeys.participant(meetingId, participantId));
 }
 
 /**
@@ -135,7 +134,7 @@ export async function updateParticipantAvailability(
   if (!participant) return null;
 
   const updated = { ...participant, availability, submittedAt: new Date() };
-  await setWithTTL(RedisKeys.participant(meetingId, participantId), updated);
+  await setWithTTL(CacheKeys.participant(meetingId, participantId), updated);
   return updated;
 }
 
@@ -146,7 +145,7 @@ export async function removeParticipant(
   meetingId: string,
   participantId: string
 ): Promise<void> {
-  await deleteKey(RedisKeys.participant(meetingId, participantId));
+  await deleteKey(CacheKeys.participant(meetingId, participantId));
 }
 
 /**

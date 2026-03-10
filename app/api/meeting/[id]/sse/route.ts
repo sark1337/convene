@@ -1,11 +1,12 @@
 /**
  * SSE (Server-Sent Events) endpoint for realtime updates
  * Clients connect to this endpoint to receive live participant updates
+ * 
+ * Uses ScoutOS Cache port for data retrieval and polls for changes.
  */
 
 import { NextRequest } from "next/server";
-import { redis } from "@/lib/redis";
-import { smembers, getAndRefresh } from "@/lib/redis";
+import { smembers, getAndRefresh } from "@/lib/cache";
 import type { Participant } from "@/types";
 
 export const runtime = "nodejs";
@@ -25,11 +26,9 @@ export async function GET(
   // Send initial connection message
   await writer.write(encoder.encode(`data: ${JSON.stringify({ type: "connected", meetingId: id })}\n\n`));
 
-  // Start polling Redis for updates
+  // Start polling cache for updates
   const pollInterval = setInterval(async () => {
     try {
-      if (!redis) return;
-
       // Get participant IDs
       const participantIds = await smembers(`meeting:${id}:participants`);
       
