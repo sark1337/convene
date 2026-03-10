@@ -9,13 +9,23 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-email/components": "^1.0.8",
+    "@upstash/redis": "^1.36.4",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "framer-motion": "^12.35.2",
+    "ics": "^3.8.1",
+    "nanoid": "^5.1.6",
     "next": "16.1.6",
+    "qrcode": "^1.5.4",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "resend": "^6.9.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
