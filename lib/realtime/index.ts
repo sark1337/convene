@@ -1,10 +1,8 @@
 /**
  * ScoutOS Queue Port Client
  * 
- * Replaces Redis Pub/Sub and SSE with ScoutOS Live's built-in queue port.
- * Perfect for real-time meeting updates.
- * 
- * Auth: APP_JWT is auto-injected at runtime - no setup needed.
+ * Gracefully handles missing APP_JWT by using in-memory pub/sub.
+ * Works in development, production, and ScoutOS environments.
  */
 
 // Types
@@ -25,52 +23,51 @@ export interface RealtimePort {
   isConnected(): boolean;
 }
 
-// Queue API base URL (same origin, /_ports/queue)
+// Queue API base URL
 const QUEUE_URL = "/_ports/queue";
 
-// Get the auth token from environment (auto-injected by ScoutOS)
+// Check if we can use ScoutOS queue (requires APP_JWT)
+function canUseScoutOSQueue(): boolean {
+  const token = process.env.APP_JWT;
+  return !!token && token.length > 0 && token !== "your_scoutos_api_key";
+}
+
+// Get auth headers
 function getAuthHeaders(): HeadersInit {
   const token = process.env.APP_JWT;
-  if (!token) {
-    return { "Content-Type": "application/json" };
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
   }
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
+  return headers;
 }
 
-function isDevelopment(): boolean {
-  return !process.env.APP_JWT || process.env.NODE_ENV === "development";
-}
-
-// In-memory adapter for development
+// In-memory adapter (always works)
 class InMemoryAdapter implements RealtimePort {
   private channels = new Map<string, Set<(message: RealtimeMessage) => void>>();
 
   createChannel(name: string): RealtimeChannel {
-    const channelName = `meeting:${name}`;
+    const topic = `meeting:${name}`;
     
     return {
       subscribe: (callback) => {
-        if (!this.channels.has(channelName)) {
-          this.channels.set(channelName, new Set());
+        if (!this.channels.has(topic)) {
+          this.channels.set(topic, new Set());
         }
-        this.channels.get(channelName)!.add(callback);
+        this.channels.get(topic)!.add(callback);
         
-        // Return unsubscribe function
         return () => {
-          this.channels.get(channelName)?.delete(callback);
+          this.channels.get(topic)?.delete(callback);
         };
       },
       publish: async (message) => {
-        const subscribers = this.channels.get(channelName);
+        const subscribers = this.channels.get(topic);
         if (subscribers) {
           subscribers.forEach((cb) => cb(message));
         }
       },
       unsubscribe: async () => {
-        this.channels.delete(channelName);
+        this.channels.delete(topic);
       },
     };
   }
@@ -80,7 +77,7 @@ class InMemoryAdapter implements RealtimePort {
   }
 }
 
-// ScoutOS Queue adapter for production
+// ScoutOS Queue adapter (production)
 class ScoutOSQueueAdapter implements RealtimePort {
   private pollIntervals = new Map<string, NodeJS.Timeout>();
   private lastMessageIds = new Map<string, string>();
@@ -93,8 +90,13 @@ class ScoutOSQueueAdapter implements RealtimePort {
       subscribe: (callback) => {
         subscribers.add(callback);
 
-        // Start polling for messages (SSE-like behavior)
+        // Poll for messages
         const poll = async () => {
+          if (!canUseScoutOSQueue()) {
+            // Fall back to in-memory behavior
+            return;
+          }
+
           try {
             const response = await fetch(`${QUEUE_URL}/${topic}/messages`, {
               method: "GET",
@@ -104,7 +106,6 @@ class ScoutOSQueueAdapter implements RealtimePort {
             if (response.ok) {
               const messages = await response.json();
               for (const msg of messages || []) {
-                // Deduplicate messages
                 const lastId = this.lastMessageIds.get(topic);
                 if (msg.id && msg.id !== lastId) {
                   this.lastMessageIds.set(topic, msg.id);
@@ -112,16 +113,14 @@ class ScoutOSQueueAdapter implements RealtimePort {
                 }
               }
             }
-          } catch (error) {
-            console.error("Queue poll error:", error);
+          } catch {
+            // Ignore polling errors
           }
         };
 
-        // Poll every second
         const interval = setInterval(poll, 1000);
         this.pollIntervals.set(topic, interval);
 
-        // Return unsubscribe function
         return () => {
           subscribers.delete(callback);
           if (subscribers.size === 0) {
@@ -133,11 +132,23 @@ class ScoutOSQueueAdapter implements RealtimePort {
       },
 
       publish: async (message) => {
-        await fetch(`${QUEUE_URL}/${topic}`, {
-          method: "POST",
-          headers: getAuthHeaders(),
-          body: JSON.stringify({ message }),
-        });
+        // Always publish locally first
+        subscribers.forEach((cb) => cb(message));
+
+        // Try ScoutOS queue if available
+        if (!canUseScoutOSQueue()) {
+          return;
+        }
+
+        try {
+          await fetch(`${QUEUE_URL}/${topic}`, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ message }),
+          });
+        } catch {
+          // Ignore publish errors - local subscribers already notified
+        }
       },
 
       unsubscribe: async () => {
@@ -157,14 +168,15 @@ class ScoutOSQueueAdapter implements RealtimePort {
 
 // Factory to get the appropriate adapter
 export function getRealtimeAdapter(): RealtimePort {
-  if (isDevelopment()) {
-    return new InMemoryAdapter();
+  // Use ScoutOS adapter if APP_JWT is available
+  if (canUseScoutOSQueue()) {
+    return new ScoutOSQueueAdapter();
   }
-  
-  return new ScoutOSQueueAdapter();
+  // Fall back to in-memory
+  return new InMemoryAdapter();
 }
 
-// Export singleton instance
+// Singleton instance
 let _instance: RealtimePort | null = null;
 
 export function getRealtime(): RealtimePort {
@@ -174,5 +186,5 @@ export function getRealtime(): RealtimePort {
   return _instance;
 }
 
-// Export for backward compatibility with SSE endpoint
-export { ScoutOSQueueAdapter, InMemoryAdapter };
+// Export adapters for testing
+export { InMemoryAdapter, ScoutOSQueueAdapter };

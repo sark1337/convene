@@ -1,10 +1,8 @@
 /**
  * ScoutOS Cache Port Client
  * 
- * Replaces Upstash Redis with ScoutOS Live's built-in cache port.
- * TTL support is native - perfect for 48-hour meeting expiry.
- * 
- * Auth: APP_JWT is auto-injected at runtime - no setup needed.
+ * Gracefully handles missing APP_JWT by falling back to in-memory storage.
+ * Works in development, production, and ScoutOS environments.
  */
 
 // TTL in seconds (48 hours)
@@ -13,24 +11,23 @@ export const MEETING_TTL_SECONDS = 48 * 60 * 60; // 172800 seconds
 // Cache API base URL (same origin, /_ports/cache)
 const CACHE_URL = "/_ports/cache";
 
-// Get the auth token from environment (auto-injected by ScoutOS)
-function getAuthHeaders(): HeadersInit {
-  const token = process.env.APP_JWT;
-  if (!token) {
-    console.warn("APP_JWT not set - cache operations may fail");
-    return { "Content-Type": "application/json" };
-  }
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-}
-
-// In-memory fallback for development
+// In-memory fallback cache
 const memoryCache = new Map<string, { value: unknown; expiresAt: number }>();
 
-function isDevelopment(): boolean {
-  return !process.env.APP_JWT || process.env.NODE_ENV === "development";
+// Check if we can use ScoutOS cache (requires APP_JWT)
+function canUseScoutOSCache(): boolean {
+  const token = process.env.APP_JWT;
+  return !!token && token.length > 0 && token !== "your_scoutos_api_key";
+}
+
+// Get auth headers for ScoutOS cache API
+function getAuthHeaders(): HeadersInit {
+  const token = process.env.APP_JWT;
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  return headers;
 }
 
 /**
@@ -41,34 +38,30 @@ export async function setWithTTL<T>(
   value: T,
   ttlSeconds: number = MEETING_TTL_SECONDS
 ): Promise<void> {
-  if (isDevelopment()) {
-    memoryCache.set(key, {
-      value,
-      expiresAt: Date.now() + ttlSeconds * 1000,
-    });
+  // Always store in memory as backup
+  memoryCache.set(key, {
+    value,
+    expiresAt: Date.now() + ttlSeconds * 1000,
+  });
+
+  // Try ScoutOS cache if available
+  if (!canUseScoutOSCache()) {
     return;
   }
 
-  const response = await fetch(`${CACHE_URL}/set`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ key, value, ttl: ttlSeconds }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Cache set failed: ${response.statusText}`);
+  try {
+    const response = await fetch(`${CACHE_URL}/set`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ key, value, ttl: ttlSeconds }),
+    });
+    
+    if (!response.ok) {
+      console.warn("ScoutOS cache set failed:", response.statusText);
+    }
+  } catch (error) {
+    console.warn("ScoutOS cache unavailable, using in-memory:", error);
   }
-}
-
-/**
- * Set with custom TTL
- */
-export async function setWithCustomTTL<T>(
-  key: string,
-  value: T,
-  ttlSeconds: number
-): Promise<void> {
-  await setWithTTL(key, value, ttlSeconds);
 }
 
 /**
@@ -78,36 +71,45 @@ export async function getAndRefresh<T>(
   key: string,
   ttlSeconds: number = MEETING_TTL_SECONDS
 ): Promise<T | null> {
-  if (isDevelopment()) {
-    const cached = memoryCache.get(key);
-    if (!cached) return null;
-    if (Date.now() > cached.expiresAt) {
-      memoryCache.delete(key);
-      return null;
-    }
+  // Try memory cache first (always available)
+  const cached = memoryCache.get(key);
+  if (cached && Date.now() < cached.expiresAt) {
     // Refresh TTL
     cached.expiresAt = Date.now() + ttlSeconds * 1000;
     return cached.value as T;
   }
 
-  const response = await fetch(`${CACHE_URL}/${encodeURIComponent(key)}`, {
-    method: "GET",
-    headers: getAuthHeaders(),
-  });
-
-  if (response.status === 404) return null;
-  if (!response.ok) {
-    throw new Error(`Cache get failed: ${response.statusText}`);
+  // Try ScoutOS cache if available
+  if (!canUseScoutOSCache()) {
+    return null;
   }
 
-  const data = await response.json();
-  
-  // Refresh TTL by setting again
-  if (data.value !== undefined) {
-    await setWithTTL(key, data.value, ttlSeconds);
-  }
+  try {
+    const response = await fetch(`${CACHE_URL}/${encodeURIComponent(key)}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
 
-  return data.value as T;
+    if (response.status === 404) return null;
+    if (!response.ok) {
+      console.warn("ScoutOS cache get failed:", response.statusText);
+      return null;
+    }
+
+    const data = await response.json();
+    if (data.value !== undefined) {
+      // Store in memory for next time
+      memoryCache.set(key, {
+        value: data.value,
+        expiresAt: Date.now() + ttlSeconds * 1000,
+      });
+      return data.value as T;
+    }
+    return null;
+  } catch (error) {
+    console.warn("ScoutOS cache unavailable:", error);
+    return null;
+  }
 }
 
 /**
@@ -118,7 +120,6 @@ export async function saddWithTTL(
   member: string,
   ttlSeconds: number = MEETING_TTL_SECONDS
 ): Promise<void> {
-  // ScoutOS cache doesn't have native sets, so we use a key pattern
   const setKey = `${key}:set`;
   const members = await smembers(key);
   if (!members.includes(member)) {
@@ -150,53 +151,54 @@ export async function srem(key: string, member: string): Promise<void> {
  * Check if key exists
  */
 export async function exists(key: string): Promise<boolean> {
-  if (isDevelopment()) {
-    const cached = memoryCache.get(key);
-    if (!cached) return false;
-    if (Date.now() > cached.expiresAt) {
-      memoryCache.delete(key);
-      return false;
-    }
+  const cached = memoryCache.get(key);
+  if (cached && Date.now() < cached.expiresAt) {
     return true;
   }
+  
+  if (!canUseScoutOSCache()) {
+    return false;
+  }
 
-  const response = await fetch(`${CACHE_URL}/${encodeURIComponent(key)}`, {
-    method: "HEAD",
-    headers: getAuthHeaders(),
-  });
-
-  return response.ok;
+  try {
+    const response = await fetch(`${CACHE_URL}/${encodeURIComponent(key)}`, {
+      method: "HEAD",
+      headers: getAuthHeaders(),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 /**
  * Delete a key
  */
 export async function deleteKey(key: string): Promise<void> {
-  if (isDevelopment()) {
-    memoryCache.delete(key);
-    memoryCache.delete(`${key}:set`);
+  memoryCache.delete(key);
+  memoryCache.delete(`${key}:set`);
+
+  if (!canUseScoutOSCache()) {
     return;
   }
 
-  await fetch(`${CACHE_URL}/${encodeURIComponent(key)}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
+  try {
+    await fetch(`${CACHE_URL}/${encodeURIComponent(key)}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
+  } catch {
+    // Ignore deletion failures
+  }
 }
 
 /**
  * Get remaining TTL in seconds
  */
 export async function getRemainingTTL(key: string): Promise<number> {
-  if (isDevelopment()) {
-    const cached = memoryCache.get(key);
-    if (!cached) return 0;
-    return Math.max(0, Math.floor((cached.expiresAt - Date.now()) / 1000));
-  }
-
-  // ScoutOS doesn't expose TTL directly, so we return default
-  // TTL is managed internally by the cache port
-  return MEETING_TTL_SECONDS;
+  const cached = memoryCache.get(key);
+  if (!cached) return 0;
+  return Math.max(0, Math.floor((cached.expiresAt - Date.now()) / 1000));
 }
 
 /**
@@ -207,28 +209,12 @@ export async function setIfNotExists<T>(
   value: T,
   ttlSeconds: number = MEETING_TTL_SECONDS
 ): Promise<boolean> {
-  if (isDevelopment()) {
-    if (memoryCache.has(key)) {
-      const cached = memoryCache.get(key)!;
-      if (Date.now() < cached.expiresAt) {
-        return false;
-      }
-    }
-    memoryCache.set(key, {
-      value,
-      expiresAt: Date.now() + ttlSeconds * 1000,
-    });
-    return true;
+  if (await exists(key)) {
+    return false;
   }
-
-  // Check if exists first
-  const existing = await exists(key);
-  if (existing) return false;
-
-  // Set the value
   await setWithTTL(key, value, ttlSeconds);
   return true;
 }
 
-// Export for compatibility with existing code
-export const redis = null; // Not used anymore, but exported for compatibility
+// Export for compatibility
+export const redis = null;
