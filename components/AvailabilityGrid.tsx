@@ -77,18 +77,18 @@ export function AvailabilityGrid({
     [participants, showHeatmap]
   );
 
-  // Get heatmap color based on availability
+  // Get heatmap color based on availability (using design.pen heatmap scale)
   const getHeatmapColor = useCallback(
     (count: number, max: number): string => {
-      if (max === 0) return "bg-gray-100";
+      if (max === 0) return "bg-heatmap-0";
       const ratio = count / max;
       
-      if (ratio === 0) return "bg-gray-100";
-      if (ratio < 0.25) return "bg-emerald-100";
-      if (ratio < 0.5) return "bg-emerald-200";
-      if (ratio < 0.75) return "bg-emerald-300";
-      if (ratio < 1) return "bg-emerald-400";
-      return "bg-emerald-500";
+      if (ratio === 0) return "bg-heatmap-0";
+      if (ratio < 0.25) return "bg-heatmap-25";
+      if (ratio < 0.5) return "bg-heatmap-50";
+      if (ratio < 0.75) return "bg-heatmap-75";
+      if (ratio < 1) return "bg-heatmap-75";
+      return "bg-heatmap-100";
     },
     []
   );
@@ -104,7 +104,7 @@ export function AvailabilityGrid({
         return getHeatmapColor(count, max);
       }
       
-      return isSelected ? "bg-primary" : "bg-gray-100 hover:bg-gray-200";
+      return isSelected ? "bg-success" : "bg-neutral-100 hover:bg-neutral-200";
     },
     [availability, showHeatmap, participants, getCellCount, getHeatmapColor]
   );
@@ -220,31 +220,33 @@ export function AvailabilityGrid({
       <div className="min-w-max">
         {/* Date headers */}
         <div className="flex mb-2" role="row">
-          <div className="w-16 flex-shrink-0 sticky left-0 bg-background z-10" role="columnheader" aria-label="Time">
+          <div className="w-16 flex-shrink-0 sticky left-0 bg-white z-10" role="columnheader" aria-label="Time">
             <span className="sr-only">Time column</span>
           </div>
           {dates.map((date) => (
             <div
               key={date.toISOString()}
-              className="flex-1 text-center py-2 font-medium text-gray-700 min-w-[44px]"
+              className="flex-1 text-center py-2 min-w-[44px]"
               role="columnheader"
               aria-label={format(date, "EEEE, MMMM d")}
             >
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-neutral-400 font-medium uppercase tracking-wide">
                 {format(date, "EEE")}
               </div>
-              <div className="text-sm">{format(date, "MMM d")}</div>
+              <div className="text-sm font-semibold text-neutral-900 font-display">
+                {format(date, "d")}
+              </div>
             </div>
           ))}
         </div>
 
         {/* Grid */}
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-0.5">
           {hours.map((hour, rowIdx) => (
-            <div key={hour} className="flex" role="row">
+            <div key={hour} className="flex gap-0.5" role="row">
               {/* Time label - sticky on mobile scroll */}
               <div 
-                className="w-16 flex-shrink-0 flex items-center justify-end pr-2 text-sm text-gray-500 sticky left-0 bg-background z-10 shadow-[4px_0_8px_rgba(0,0,0,0.1)]"
+                className="w-16 flex-shrink-0 flex items-center justify-end pr-2 text-xs font-medium text-neutral-400 sticky left-0 bg-white z-10"
                 role="rowheader"
                 aria-label={`${format(setHours(new Date(), hour), "h a")}`}
               >
@@ -266,12 +268,13 @@ export function AvailabilityGrid({
                   <motion.div
                     key={cell.isoString}
                     data-cell-index={index}
-                    whileHover={!readonly ? { scale: 1.1 } : {}}
+                    whileHover={!readonly ? { scale: 1.05 } : {}}
                     whileTap={!readonly ? { scale: 0.95 } : {}}
                     className={`
-                      min-w-[44px] min-h-[44px] m-0.5 rounded-lg cursor-pointer
+                      min-w-[44px] min-h-[44px] flex-1 rounded-lg cursor-pointer
                       transition-colors duration-150 select-none-drag grid-cell
-                      focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1
+                      focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1
+                      flex items-center justify-center
                       ${getCellBackground(cell.isoString)}
                       ${readonly ? "cursor-default" : ""}
                       ${isSelected && !showHeatmap ? "text-white" : ""}
@@ -285,10 +288,16 @@ export function AvailabilityGrid({
                     onKeyDown={(e) => handleKeyDown(e, cell, index)}
                     style={{ touchAction: "none" }}
                   >
+                    {/* Checkmark for selected cells */}
+                    {isSelected && !showHeatmap && (
+                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
                     {showHeatmap && count > 0 && (
-                      <div className="w-full h-full flex items-center justify-center text-xs font-medium" aria-hidden="true">
+                      <span className="text-xs font-semibold text-white/90" aria-hidden="true">
                         {count}
-                      </div>
+                      </span>
                     )}
                   </motion.div>
                 );
@@ -299,18 +308,18 @@ export function AvailabilityGrid({
 
         {/* Heatmap legend */}
         {showHeatmap && participants.length > 0 && (
-          <div className="flex items-center gap-2 mt-4 text-sm text-gray-600 flex-wrap" role="region" aria-label="Availability legend">
-            <span>Availability:</span>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 rounded bg-gray-100" aria-hidden="true" />
-              <span>0</span>
+          <div className="flex items-center gap-3 mt-4 text-xs text-neutral-500 flex-wrap" role="region" aria-label="Availability legend">
+            <span className="font-medium">Availability:</span>
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-4 rounded bg-heatmap-0" aria-hidden="true" />
+              <span>None</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 rounded bg-emerald-200" aria-hidden="true" />
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-4 rounded bg-heatmap-50" aria-hidden="true" />
               <span>Some</span>
             </div>
-            <div className="flex items-center gap-1">
-              <div className="w-4 h-4 rounded bg-emerald-500" aria-hidden="true" />
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-4 rounded bg-heatmap-100" aria-hidden="true" />
               <span>All</span>
             </div>
           </div>

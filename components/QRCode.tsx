@@ -19,7 +19,7 @@ export function QRCode({ url, size = 200, className = "" }: QRCodeProps) {
       width: size,
       margin: 2,
       color: {
-        dark: "#171717",
+        dark: "#18181B",
         light: "#FFFFFF",
       },
     })
@@ -53,18 +53,18 @@ export function QRCode({ url, size = 200, className = "" }: QRCodeProps) {
       className={`${className}`}
     >
       {/* QR Code */}
-      <div className="bg-white p-4 rounded-2xl shadow-lg inline-block">
+      <div className="bg-white p-4 rounded-3xl shadow-lg inline-block">
         {qrDataUrl ? (
           <img
             src={qrDataUrl}
             alt="QR Code for meeting link"
             width={size}
             height={size}
-            className="mx-auto"
+            className="mx-auto rounded-xl"
           />
         ) : (
           <div
-            className="animate-pulse bg-gray-200 rounded-lg"
+            className="animate-pulse bg-neutral-100 rounded-xl"
             style={{ width: size, height: size }}
           />
         )}
@@ -75,7 +75,7 @@ export function QRCode({ url, size = 200, className = "" }: QRCodeProps) {
         <button
           onClick={handleDownload}
           disabled={!qrDataUrl}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 text-white rounded-2xl hover:bg-primary-600 transition-colors disabled:opacity-50 font-semibold text-sm"
           aria-label="Download QR code as PNG"
         >
           <svg
@@ -96,13 +96,13 @@ export function QRCode({ url, size = 200, className = "" }: QRCodeProps) {
 
         <button
           onClick={handleCopyLink}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-3 bg-neutral-100 text-neutral-700 rounded-2xl hover:bg-neutral-200 transition-colors font-semibold text-sm"
           aria-label="Copy meeting link to clipboard"
         >
           {copied ? (
             <>
               <svg
-                className="w-5 h-5 text-emerald-500"
+                className="w-5 h-5 text-success"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -138,7 +138,7 @@ export function QRCode({ url, size = 200, className = "" }: QRCodeProps) {
       </div>
 
       {/* URL display */}
-      <p className="mt-3 text-xs text-gray-500 break-all text-center max-w-[200px]">
+      <p className="mt-3 text-xs text-neutral-400 break-all text-center max-w-[200px]">
         {url}
       </p>
     </motion.div>
@@ -167,16 +167,16 @@ export function QRCodeModal({ isOpen, onClose, url, meetingTitle }: QRCodeModalP
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-card rounded-2xl p-6 max-w-sm w-full shadow-xl"
+        className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 id="qr-modal-title" className="text-lg font-semibold">
+          <h2 id="qr-modal-title" className="text-lg font-bold font-display">
             Share Meeting
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-neutral-100 rounded-xl transition-colors"
             aria-label="Close modal"
           >
             <svg
@@ -196,14 +196,14 @@ export function QRCodeModal({ isOpen, onClose, url, meetingTitle }: QRCodeModalP
         </div>
 
         {meetingTitle && (
-          <p className="text-sm text-gray-600 mb-4">{meetingTitle}</p>
+          <p className="text-sm text-neutral-500 mb-4">{meetingTitle}</p>
         )}
 
         <div className="flex flex-col items-center">
           <QRCode url={url} size={200} />
         </div>
 
-        <p className="mt-4 text-sm text-gray-500 text-center">
+        <p className="mt-4 text-sm text-neutral-400 text-center">
           Scan the QR code or copy the link to share this meeting
         </p>
       </motion.div>

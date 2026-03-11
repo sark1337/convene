@@ -35,13 +35,15 @@ export function TimezoneSelector({ onTimezoneChange, className = "" }: TimezoneS
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <span className="text-sm text-muted-foreground">
+      <span className="text-sm text-neutral-400 font-medium">
         {tzAbbrev}
       </span>
       <select
         value={timezone}
         onChange={(e) => handleChange(e.target.value)}
-        className="text-sm bg-transparent border border-border rounded-lg px-2 py-1 focus:ring-2 focus:ring-primary focus:border-transparent"
+        className="text-sm bg-neutral-100 border-none rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:outline-none text-neutral-700 appearance-none
+                   bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTYgOWw2IDYgNi02Ii8+PC9zdmc+')]
+                   bg-no-repeat bg-[right_0.75rem_center] bg-[length:1rem] pr-8"
         aria-label="Select timezone"
       >
         {getCommonTimezones().map((tz) => (
@@ -90,7 +92,7 @@ export function TimeDisplay({
     <span className={className}>
       {display}
       {showTz && tz && (
-        <span className="text-muted-foreground ml-1 text-xs">({tz})</span>
+        <span className="text-neutral-400 ml-1 text-xs">({tz})</span>
       )}
     </span>
   );

@@ -9,6 +9,16 @@ interface ParticipantListProps {
   currentParticipantId?: string;
 }
 
+// Color palette for participant avatars (cycling through primary, teal, pink)
+const AVATAR_COLORS = [
+  { bg: "bg-primary-100", text: "text-primary-500" },
+  { bg: "bg-teal-100", text: "text-teal-600" },
+  { bg: "bg-pink-100", text: "text-pink-500" },
+  { bg: "bg-primary-100", text: "text-primary-600" },
+  { bg: "bg-teal-100", text: "text-teal-500" },
+  { bg: "bg-pink-100", text: "text-pink-400" },
+];
+
 export function ParticipantList({
   participants,
   currentParticipantId,
@@ -30,86 +40,87 @@ export function ParticipantList({
           {pending.length} pending.
         </span>
         <div className="flex items-center gap-2" aria-hidden="true">
-          <span className="w-3 h-3 rounded-full bg-emerald-500" />
-          <span className="text-muted-foreground">
+          <span className="w-3 h-3 rounded-full bg-success" />
+          <span className="text-neutral-500">
             {submitted.length} responded
           </span>
         </div>
         <div className="flex items-center gap-2" aria-hidden="true">
-          <span className="w-3 h-3 rounded-full bg-gray-300" />
-          <span className="text-muted-foreground">
+          <span className="w-3 h-3 rounded-full bg-neutral-300" />
+          <span className="text-neutral-500">
             {pending.length} pending
           </span>
         </div>
       </div>
 
-      {/* Participant chips */}
+      {/* Participant rows */}
       <ul 
-        className="flex flex-wrap gap-2 list-none p-0 m-0" 
+        className="space-y-2 list-none p-0 m-0" 
         role="list"
         aria-label="Participants"
       >
         {participants.map((participant, index) => {
           const hasSubmitted = hasSubmittedAvailability(participant);
           const isCurrentUser = participant.id === currentParticipantId;
+          const colorScheme = AVATAR_COLORS[index % AVATAR_COLORS.length];
 
           return (
             <motion.li
               key={participant.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
               className={`
-                flex items-center gap-2 px-3 py-2 rounded-full list-none
-                ${
-                  hasSubmitted
-                    ? "bg-emerald-50 border border-emerald-200"
-                    : "bg-gray-50 border border-gray-200"
-                }
-                ${isCurrentUser ? "ring-2 ring-primary" : ""}
+                flex items-center gap-3 px-4 py-3 rounded-2xl list-none
+                bg-neutral-100
+                ${isCurrentUser ? "ring-2 ring-primary-500 ring-offset-1" : ""}
               `}
               aria-label={`${participant.name}${isCurrentUser ? " (you)" : ""}, ${hasSubmitted ? "has submitted availability" : "pending response"}`}
             >
               {/* Avatar */}
               <div
                 className={`
-                  w-8 h-8 rounded-full flex items-center justify-center
-                  font-medium text-sm
-                  ${
-                    hasSubmitted
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-gray-100 text-gray-500"
-                  }
+                  w-10 h-10 rounded-full flex items-center justify-center
+                  font-bold text-sm font-display flex-shrink-0
+                  ${hasSubmitted ? colorScheme.bg : "bg-neutral-200"}
+                  ${hasSubmitted ? colorScheme.text : "text-neutral-400"}
                 `}
                 aria-hidden="true"
               >
                 {participant.name.charAt(0).toUpperCase()}
               </div>
 
-              {/* Name */}
-              <span
-                className={`
-                  font-medium
-                  ${hasSubmitted ? "text-emerald-900" : "text-gray-600"}
-                `}
-              >
-                {participant.name}
-                {isCurrentUser && (
-                  <span className="sr-only">(you)</span>
-                )}
-                {isCurrentUser && (
-                  <span aria-hidden="true"> (You)</span>
-                )}
-              </span>
+              {/* Name + status */}
+              <div className="flex-1 min-w-0">
+                <span
+                  className={`
+                    font-semibold text-sm block truncate
+                    ${hasSubmitted ? "text-neutral-900" : "text-neutral-500"}
+                  `}
+                >
+                  {participant.name}
+                  {isCurrentUser && (
+                    <span className="sr-only">(you)</span>
+                  )}
+                  {isCurrentUser && (
+                    <span className="text-neutral-400 font-normal" aria-hidden="true"> (You)</span>
+                  )}
+                </span>
+              </div>
 
               {/* Status indicator */}
               {hasSubmitted ? (
-                <span className="text-emerald-500 text-lg" aria-label="Submitted">
-                  ✓<span className="sr-only"> Submitted</span>
+                <span className="flex items-center gap-1.5 bg-success/10 text-success px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Done
+                  <span className="sr-only"> Submitted</span>
                 </span>
               ) : (
-                <span className="text-gray-400 text-xs">
-                  pending
+                <span className="flex items-center gap-1.5 bg-neutral-200 text-neutral-500 px-2.5 py-1 rounded-full text-xs font-medium flex-shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-pulse" />
+                  Pending
                   <span className="sr-only"> response</span>
                 </span>
               )}
@@ -126,7 +137,7 @@ export function ParticipantList({
           transition={{ delay: 0.3 }}
           role="status"
           aria-live="polite"
-          className="text-sm text-muted-foreground"
+          className="text-sm text-neutral-400"
         >
           Waiting for {pending.map((p) => p.name).join(", ")} to respond
         </motion.p>
@@ -150,12 +161,12 @@ export function ParticipantSummary({ total, responded }: ParticipantSummaryProps
       aria-label="Response progress"
     >
       {/* Progress bar */}
-      <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="flex-1 h-2 bg-neutral-200 rounded-full overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="h-full bg-emerald-500 rounded-full"
+          className="h-full bg-primary-500 rounded-full"
           role="progressbar"
           aria-valuenow={percentage}
           aria-valuemin={0}
@@ -165,9 +176,9 @@ export function ParticipantSummary({ total, responded }: ParticipantSummaryProps
       </div>
 
       {/* Count */}
-      <div className="text-sm text-muted-foreground whitespace-nowrap">
+      <div className="text-sm text-neutral-500 whitespace-nowrap">
         <span className="sr-only">Progress: </span>
-        {responded}/{total} responded ({percentage}%)
+        <span className="font-semibold text-neutral-900">{responded}</span>/{total} responded
       </div>
     </div>
   );

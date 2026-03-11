@@ -92,17 +92,17 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="w-full max-w-md mx-auto space-y-6"
+      className="w-full max-w-md mx-auto space-y-5"
       noValidate
     >
       {/* Meeting Title */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <label
           htmlFor="title"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-[13px] font-semibold text-neutral-500"
         >
           Meeting Title
-          <span className="text-red-500 ml-1" aria-hidden="true">*</span>
+          <span className="text-error ml-1" aria-hidden="true">*</span>
         </label>
         <input
           id="title"
@@ -112,19 +112,20 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
             setTitle(e.target.value);
             clearError("title");
           }}
-          placeholder="Team Sync"
+          placeholder="e.g. Team Sync"
           required
           aria-required="true"
           aria-invalid={!!errors.title}
           aria-describedby={errors.title ? "title-error" : undefined}
-          className={`w-full px-4 py-3 rounded-xl border 
-                     focus:ring-2 focus:ring-primary focus:border-transparent
+          className={`w-full px-[18px] py-[14px] rounded-2xl border-none
+                     bg-neutral-100 text-neutral-900 text-[15px]
+                     focus:ring-2 focus:ring-primary-500 focus:outline-none
                      transition-all duration-200
-                     placeholder:text-gray-400
-                     ${errors.title ? "border-red-500" : "border-gray-200"}`}
+                     placeholder:text-neutral-400
+                     ${errors.title ? "ring-2 ring-error" : ""}`}
         />
         {errors.title && (
-          <p id="title-error" className="text-sm text-red-600 flex items-center gap-1" role="alert">
+          <p id="title-error" className="text-sm text-error flex items-center gap-1" role="alert">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
@@ -134,13 +135,13 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
       </div>
 
       {/* Your Email */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
+          className="block text-[13px] font-semibold text-neutral-500"
         >
           Your Email
-          <span className="text-red-500 ml-1" aria-hidden="true">*</span>
+          <span className="text-error ml-1" aria-hidden="true">*</span>
         </label>
         <input
           id="email"
@@ -155,14 +156,15 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
           aria-required="true"
           aria-invalid={!!errors.hostEmail}
           aria-describedby={errors.hostEmail ? "email-error" : undefined}
-          className={`w-full px-4 py-3 rounded-xl border 
-                     focus:ring-2 focus:ring-primary focus:border-transparent
+          className={`w-full px-[18px] py-[14px] rounded-2xl border-none
+                     bg-neutral-100 text-neutral-900 text-[15px]
+                     focus:ring-2 focus:ring-primary-500 focus:outline-none
                      transition-all duration-200
-                     placeholder:text-gray-400
-                     ${errors.hostEmail ? "border-red-500" : "border-gray-200"}`}
+                     placeholder:text-neutral-400
+                     ${errors.hostEmail ? "ring-2 ring-error" : ""}`}
         />
         {errors.hostEmail && (
-          <p id="email-error" className="text-sm text-red-600 flex items-center gap-1" role="alert">
+          <p id="email-error" className="text-sm text-error flex items-center gap-1" role="alert">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
@@ -172,10 +174,10 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
       </div>
 
       {/* Date Range */}
-      <fieldset className="space-y-2">
-        <legend className="block text-sm font-medium text-gray-700">
+      <fieldset className="space-y-1.5">
+        <legend className="block text-[13px] font-semibold text-neutral-500">
           Date Range
-          <span className="text-red-500 ml-1" aria-hidden="true">*</span>
+          <span className="text-error ml-1" aria-hidden="true">*</span>
         </legend>
         <div className="flex gap-3 items-center">
           <label htmlFor="start-date" className="sr-only">Start date</label>
@@ -191,12 +193,13 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
             aria-required="true"
             aria-invalid={!!errors.dateRange}
             aria-describedby={errors.dateRange ? "date-range-error" : undefined}
-            className={`flex-1 px-4 py-3 rounded-xl border 
-                       focus:ring-2 focus:ring-primary focus:border-transparent
+            className={`flex-1 px-[18px] py-[14px] rounded-2xl border-none
+                       bg-neutral-100 text-neutral-900 text-[15px]
+                       focus:ring-2 focus:ring-primary-500 focus:outline-none
                        transition-all duration-200
-                       ${errors.dateRange ? "border-red-500" : "border-gray-200"}`}
+                       ${errors.dateRange ? "ring-2 ring-error" : ""}`}
           />
-          <span className="text-gray-400 font-medium" aria-hidden="true">to</span>
+          <span className="text-neutral-400 font-medium text-sm" aria-hidden="true">to</span>
           <label htmlFor="end-date" className="sr-only">End date</label>
           <input
             id="end-date"
@@ -209,14 +212,15 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
             required
             aria-required="true"
             aria-describedby={errors.dateRange ? "date-range-error" : undefined}
-            className={`flex-1 px-4 py-3 rounded-xl border 
-                       focus:ring-2 focus:ring-primary focus:border-transparent
+            className={`flex-1 px-[18px] py-[14px] rounded-2xl border-none
+                       bg-neutral-100 text-neutral-900 text-[15px]
+                       focus:ring-2 focus:ring-primary-500 focus:outline-none
                        transition-all duration-200
-                       ${errors.dateRange ? "border-red-500" : "border-gray-200"}`}
+                       ${errors.dateRange ? "ring-2 ring-error" : ""}`}
           />
         </div>
         {errors.dateRange && (
-          <p id="date-range-error" className="text-sm text-red-600 flex items-center gap-1" role="alert">
+          <p id="date-range-error" className="text-sm text-error flex items-center gap-1" role="alert">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
@@ -226,10 +230,10 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
       </fieldset>
 
       {/* Time Range */}
-      <fieldset className="space-y-2">
-        <legend className="block text-sm font-medium text-gray-700">
+      <fieldset className="space-y-1.5">
+        <legend className="block text-[13px] font-semibold text-neutral-500">
           Time Range
-          <span className="text-gray-400 font-normal ml-1">(optional)</span>
+          <span className="text-neutral-400 font-normal ml-1">(optional)</span>
         </legend>
         <div className="flex gap-3 items-center">
           <label htmlFor="time-start" className="sr-only">Start time</label>
@@ -242,10 +246,11 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
             }}
             aria-invalid={!!errors.timeRange}
             aria-describedby={errors.timeRange ? "time-range-error" : undefined}
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 
-                       focus:ring-2 focus:ring-primary focus:border-transparent
+            className="flex-1 px-[18px] py-[14px] rounded-2xl border-none
+                       bg-neutral-100 text-neutral-900 text-[15px]
+                       focus:ring-2 focus:ring-primary-500 focus:outline-none
                        transition-all duration-200 appearance-none
-                       bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5YzlhOWEiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTYgOWw2IDYgNi02Ii8+PC9zdmc+')]
+                       bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTYgOWw2IDYgNi02Ii8+PC9zdmc+')]
                        bg-no-repeat bg-[right_1rem_center] bg-[length:1rem]"
           >
             {Array.from({ length: 24 }, (_, i) => (
@@ -254,7 +259,7 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
               </option>
             ))}
           </select>
-          <span className="text-gray-400 font-medium" aria-hidden="true">to</span>
+          <span className="text-neutral-400 font-medium text-sm" aria-hidden="true">to</span>
           <label htmlFor="time-end" className="sr-only">End time</label>
           <select
             id="time-end"
@@ -265,10 +270,11 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
             }}
             aria-invalid={!!errors.timeRange}
             aria-describedby={errors.timeRange ? "time-range-error" : undefined}
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 
-                       focus:ring-2 focus:ring-primary focus:border-transparent
+            className="flex-1 px-[18px] py-[14px] rounded-2xl border-none
+                       bg-neutral-100 text-neutral-900 text-[15px]
+                       focus:ring-2 focus:ring-primary-500 focus:outline-none
                        transition-all duration-200 appearance-none
-                       bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5YzlhOWEiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTYgOWw2IDYgNi02Ii8+PC9zdmc+')]
+                       bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNhMWExYWEiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTYgOWw2IDYgNi02Ii8+PC9zdmc+')]
                        bg-no-repeat bg-[right_1rem_center] bg-[length:1rem]"
           >
             {Array.from({ length: 24 }, (_, i) => (
@@ -279,7 +285,7 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
           </select>
         </div>
         {errors.timeRange && (
-          <p id="time-range-error" className="text-sm text-red-600 flex items-center gap-1" role="alert">
+          <p id="time-range-error" className="text-sm text-error flex items-center gap-1" role="alert">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
@@ -295,13 +301,14 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         aria-busy={isLoading}
-        className="w-full py-4 px-6 rounded-xl font-semibold text-white
-                   bg-gradient-to-r from-primary to-purple-600
-                   shadow-lg shadow-primary/25
-                   hover:shadow-xl hover:shadow-primary/30
+        className="w-full py-[14px] px-7 rounded-3xl font-semibold text-white text-base
+                   bg-primary-500
+                   shadow-primary
+                   hover:shadow-primary-lg hover:bg-primary-600
                    disabled:opacity-50 disabled:cursor-not-allowed
                    transition-all duration-200
-                   focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                   focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+                   flex items-center justify-center gap-2"
       >
         {isLoading ? (
           <span className="flex items-center justify-center gap-2">
@@ -329,7 +336,12 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
             <span>Creating...</span>
           </span>
         ) : (
-          "Create Meeting Link"
+          <>
+            Create Meeting Link
+            <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </>
         )}
       </motion.button>
 
@@ -338,9 +350,8 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="text-center text-sm text-gray-500 flex items-center justify-center gap-2"
+        className="text-center text-sm text-neutral-400"
       >
-        <span className="text-lg" aria-hidden="true">⏳</span>
         Sessions auto-expire in 48 hours
       </motion.p>
     </motion.form>
