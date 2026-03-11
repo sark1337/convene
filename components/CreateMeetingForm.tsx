@@ -86,33 +86,35 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
     }
   };
 
-  // Dark theme input classes
   const inputClasses = `w-full h-12 px-4 rounded-[10px] border text-[14px]
                         bg-[#18181f] border-[#2a2a3a] text-white
                         focus:ring-2 focus:ring-[#7c3aed] focus:border-transparent focus:outline-none
                         transition-all duration-200
                         placeholder:text-[#71717a]`;
-  
+
   const errorInputClasses = "ring-2 ring-[#ef4444] border-transparent";
-  
-  const labelClasses = "block text-[12px] font-medium text-[#a1a1aa]";
+
+  const labelClasses = "block text-[12px] font-medium text-[#a1a1aa] mb-1.5";
+
+  const errorIcon = (
+    <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+    </svg>
+  );
+
+  // Suppress unused variable warning - submitted is used for future validation-on-blur
+  void submitted;
 
   return (
-    <motion.form
+    <form
       onSubmit={handleSubmit}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="w-full space-y-5"
+      className="w-full space-y-4"
       noValidate
     >
       {/* Meeting Title */}
-      <div className="space-y-1.5">
+      <div>
         <label htmlFor="title" className={labelClasses}>
-          <span className="flex items-center gap-2">
-            📝 Meeting Title
-          </span>
-          <span className="text-[#ef4444] ml-1" aria-hidden="true">*</span>
+          Meeting Title <span className="text-[#ef4444]" aria-hidden="true">*</span>
         </label>
         <input
           id="title"
@@ -130,22 +132,17 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
           className={`${inputClasses} ${errors.title ? errorInputClasses : ""}`}
         />
         {errors.title && (
-          <p id="title-error" className="text-[13px] text-[#ef4444] flex items-center gap-1" role="alert">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
+          <p id="title-error" className="text-[13px] text-[#ef4444] flex items-center gap-1 mt-1.5" role="alert">
+            {errorIcon}
             {errors.title}
           </p>
         )}
       </div>
 
       {/* Your Email */}
-      <div className="space-y-1.5">
+      <div>
         <label htmlFor="email" className={labelClasses}>
-          <span className="flex items-center gap-2">
-            ✉️ Your Email
-          </span>
-          <span className="text-[#ef4444] ml-1" aria-hidden="true">*</span>
+          Your Email <span className="text-[#ef4444]" aria-hidden="true">*</span>
         </label>
         <input
           id="email"
@@ -163,22 +160,17 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
           className={`${inputClasses} ${errors.hostEmail ? errorInputClasses : ""}`}
         />
         {errors.hostEmail && (
-          <p id="email-error" className="text-[13px] text-[#ef4444] flex items-center gap-1" role="alert">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
+          <p id="email-error" className="text-[13px] text-[#ef4444] flex items-center gap-1 mt-1.5" role="alert">
+            {errorIcon}
             {errors.hostEmail}
           </p>
         )}
       </div>
 
       {/* Date Range */}
-      <fieldset className="space-y-1.5">
+      <fieldset>
         <legend className={labelClasses}>
-          <span className="flex items-center gap-2">
-            📅 Date Range
-          </span>
-          <span className="text-[#ef4444] ml-1" aria-hidden="true">*</span>
+          Date Range <span className="text-[#ef4444]" aria-hidden="true">*</span>
         </legend>
         <div className="flex gap-3 items-center">
           <label htmlFor="start-date" className="sr-only">Start date</label>
@@ -221,22 +213,17 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
           />
         </div>
         {errors.dateRange && (
-          <p id="date-range-error" className="text-[13px] text-[#ef4444] flex items-center gap-1" role="alert">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
+          <p id="date-range-error" className="text-[13px] text-[#ef4444] flex items-center gap-1 mt-1.5" role="alert">
+            {errorIcon}
             {errors.dateRange}
           </p>
         )}
       </fieldset>
 
       {/* Time Range */}
-      <fieldset className="space-y-1.5">
+      <fieldset>
         <legend className={labelClasses}>
-          <span className="flex items-center gap-2">
-            🕐 Time Range
-          </span>
-          <span className="text-[#71717a] font-normal text-[11px] ml-1">(optional)</span>
+          Time Range <span className="text-[#71717a] font-normal text-[11px]">(optional)</span>
         </legend>
         <div className="flex gap-3 items-center">
           <label htmlFor="time-start" className="sr-only">Start time</label>
@@ -288,10 +275,8 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
           </select>
         </div>
         {errors.timeRange && (
-          <p id="time-range-error" className="text-[13px] text-[#ef4444] flex items-center gap-1" role="alert">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
+          <p id="time-range-error" className="text-[13px] text-[#ef4444] flex items-center gap-1 mt-1.5" role="alert">
+            {errorIcon}
             {errors.timeRange}
           </p>
         )}
@@ -310,7 +295,7 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
                    disabled:opacity-50 disabled:cursor-not-allowed
                    transition-all duration-200
                    focus:outline-none focus:ring-2 focus:ring-[#7c3aed] focus:ring-offset-2 focus:ring-offset-[#111116]
-                   flex items-center justify-center gap-2"
+                   flex items-center justify-center gap-2 mt-6"
       >
         {isLoading ? (
           <span className="flex items-center justify-center gap-2">
@@ -340,10 +325,10 @@ export function CreateMeetingForm({ onSubmit, isLoading }: CreateMeetingFormProp
         ) : (
           <>
             Create meeting link
-            <span>→</span>
+            <span aria-hidden="true">&rarr;</span>
           </>
         )}
       </motion.button>
-    </motion.form>
+    </form>
   );
 }

@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Modal } from "@/components/Modal";
 import { CreateMeetingForm } from "@/components/CreateMeetingForm";
 
 export default function Home() {
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateMeeting = async (data: {
@@ -43,11 +45,11 @@ export default function Home() {
         Skip to main content
       </a>
 
-      {/* Header - Sticky nav */}
-      <header 
-        role="banner" 
+      {/* Header */}
+      <header
+        role="banner"
         className="sticky top-0 h-[60px] z-50 border-b border-[#1e1e2a]"
-        style={{ backgroundColor: 'rgba(9, 9, 11, 0.95)' }}
+        style={{ backgroundColor: "rgba(9, 9, 11, 0.95)" }}
       >
         <div className="mx-auto max-w-6xl px-6 h-full">
           <nav className="flex items-center justify-between h-full">
@@ -65,130 +67,101 @@ export default function Home() {
               </span>
             </a>
             <div className="flex items-center gap-6">
-              <a 
-                href="#how-it-works" 
-                className="text-[#71717a] hover:text-white text-[14px] transition-colors"
+              <a
+                href="#how-it-works"
+                className="text-[#71717a] hover:text-white text-[14px] transition-colors hidden sm:inline"
               >
                 How it works
               </a>
-              <a 
-                href="#pricing" 
-                className="text-[#71717a] hover:text-white text-[14px] transition-colors"
-              >
-                Pricing
-              </a>
-              <a
-                href="#create-meeting"
+              <button
+                onClick={() => setIsModalOpen(true)}
                 className="px-4 py-2 rounded-lg bg-[#7c3aed] text-white text-[14px] font-semibold hover:bg-[#6d28d9] transition-colors"
               >
                 Create meeting
-              </a>
+              </button>
             </div>
           </nav>
         </div>
       </header>
 
-      <main id="main-content" role="main" className="mx-auto max-w-6xl px-6">
-        {/* Hero Section - Two column layout */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="py-20 lg:py-[80px]"
-        >
-          <div className="flex flex-col lg:flex-row gap-20 lg:gap-[80px]">
-            {/* Left Column */}
-            <div className="flex-1 flex flex-col justify-center">
-              {/* Tag/Pill */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="inline-flex items-center px-3 py-1.5 rounded-full text-[13px] font-medium mb-6 w-fit"
-                style={{ 
-                  backgroundColor: 'rgba(124, 58, 237, 0.12)',
-                  border: '1px solid rgba(167, 139, 250, 0.3)',
-                  color: '#a78bfa'
-                }}
-              >
-                Fast · Free · No sign-up
-              </motion.div>
-
-              {/* Headline */}
-              <h1 className="text-[40px] sm:text-[52px] font-extrabold text-white tracking-tight leading-[1.1] mb-5 font-display max-w-[460px]">
-                Find time to{" "}
-                <span className="block">meet, fast</span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-[15px] text-[#a1a1aa] leading-relaxed max-w-md mb-8">
-                Share a link. Participants mark their availability. Convene finds the best time. Done in 48 hours.
-              </p>
-
-              {/* Avatar stack with social proof */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="flex items-center gap-3"
-              >
-                <div className="flex items-center -space-x-2">
-                  <div className="w-9 h-9 rounded-full bg-[#111116] flex items-center justify-center text-[#a78bfa] font-bold text-sm font-display ring-2 ring-[#09090b]">S</div>
-                  <div className="w-9 h-9 rounded-full bg-[#111116] flex items-center justify-center text-[#14b8a6] font-bold text-sm font-display ring-2 ring-[#09090b]">M</div>
-                  <div className="w-9 h-9 rounded-full bg-[#111116] flex items-center justify-center text-[#f472b6] font-bold text-sm font-display ring-2 ring-[#09090b]">J</div>
-                  <div className="w-9 h-9 rounded-full bg-[#111116] flex items-center justify-center text-[#7c3aed] font-bold text-sm font-display ring-2 ring-[#09090b]">+</div>
-                </div>
-                <p className="text-[13px] text-[#71717a]">
-                  <span className="text-white font-semibold">2,400+</span> meetings scheduled this week
-                </p>
-              </motion.div>
-            </div>
-
-            {/* Right Column - Form Card */}
+      <main id="main-content" role="main">
+        {/* Hero Section - Centered */}
+        <section className="flex flex-col items-center justify-center text-center px-6 pt-32 pb-24 sm:pt-40 sm:pb-32 min-h-[calc(100vh-60px)]">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="max-w-2xl mx-auto"
+          >
+            {/* Pill */}
             <motion.div
-              id="create-meeting"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="flex-1 max-w-md"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center px-3 py-1.5 rounded-full text-[13px] font-medium mb-8"
+              style={{
+                backgroundColor: "rgba(124, 58, 237, 0.12)",
+                border: "1px solid rgba(167, 139, 250, 0.3)",
+                color: "#a78bfa",
+              }}
             >
-              <div 
-                className="rounded-[14px] border p-6"
-                style={{ 
-                  backgroundColor: '#111116',
-                  borderColor: '#1e1e2a'
-                }}
-              >
-                <div className="mb-5">
-                  <h2 className="text-[18px] font-bold text-white tracking-tight font-display">
-                    New meeting
-                  </h2>
-                  <p className="text-[13px] text-[#71717a] mt-1">
-                    Takes 30 seconds to set up.
-                  </p>
-                </div>
-
-                {/* Divider */}
-                <div className="h-px bg-[#1e1e2a] mb-5" />
-
-                <CreateMeetingForm onSubmit={handleCreateMeeting} isLoading={isCreating} />
-
-                {/* Footer text */}
-                <p className="text-center text-[11px] text-[#71717a] mt-5">
-                  Session expires in 48 hours · No account required
-                </p>
-              </div>
+              Free &middot; No sign-up &middot; 48-hour sessions
             </motion.div>
-          </div>
-        </motion.section>
+
+            {/* Headline */}
+            <h1 className="text-[40px] sm:text-[56px] lg:text-[64px] font-extrabold text-white tracking-tight leading-[1.05] mb-6 font-display">
+              Find the time{" "}
+              <span className="block">everyone&apos;s free</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-[17px] sm:text-[19px] text-[#a1a1aa] leading-relaxed max-w-lg mx-auto mb-10">
+              Share a link. Collect availability. Done in 48 hours.
+            </p>
+
+            {/* CTA Button */}
+            <motion.button
+              onClick={() => setIsModalOpen(true)}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl
+                         bg-[#7c3aed] text-white text-[16px] font-semibold
+                         hover:bg-[#6d28d9] transition-colors
+                         shadow-primary
+                         focus:outline-none focus:ring-2 focus:ring-[#7c3aed] focus:ring-offset-2 focus:ring-offset-[#09090b]"
+            >
+              Create meeting
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </motion.button>
+
+            {/* Social proof */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="flex items-center justify-center gap-3 mt-10"
+            >
+              <div className="flex items-center -space-x-2">
+                <div className="w-8 h-8 rounded-full bg-[#111116] flex items-center justify-center text-[#a78bfa] font-bold text-xs font-display ring-2 ring-[#09090b]">S</div>
+                <div className="w-8 h-8 rounded-full bg-[#111116] flex items-center justify-center text-[#14b8a6] font-bold text-xs font-display ring-2 ring-[#09090b]">M</div>
+                <div className="w-8 h-8 rounded-full bg-[#111116] flex items-center justify-center text-[#f472b6] font-bold text-xs font-display ring-2 ring-[#09090b]">J</div>
+              </div>
+              <p className="text-[13px] text-[#71717a]">
+                <span className="text-white font-semibold">2,400+</span> meetings scheduled this week
+              </p>
+            </motion.div>
+          </motion.div>
+        </section>
 
         {/* How it Works */}
         <motion.section
           id="how-it-works"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="pb-16"
+          transition={{ delay: 0.5 }}
+          className="mx-auto max-w-6xl px-6 pb-20"
           aria-labelledby="how-it-works-heading"
         >
           <h2 id="how-it-works-heading" className="text-[18px] font-bold text-white tracking-tight mb-6 font-display">
@@ -199,7 +172,7 @@ export default function Home() {
             {[
               { num: "1", title: "Create a meeting", desc: "Pick a title, date range & time window", color: "bg-[#7c3aed]" },
               { num: "2", title: "Share the link", desc: "Friends tap to mark their free times", color: "bg-[#14b8a6]" },
-              { num: "3", title: "Find the match", desc: "Best times auto-ranked — confirm in one tap", color: "bg-[#f472b6]" },
+              { num: "3", title: "Find the match", desc: "Best times auto-ranked -- confirm in one tap", color: "bg-[#f472b6]" },
             ].map((step) => (
               <motion.div
                 key={step.num}
@@ -218,17 +191,17 @@ export default function Home() {
           </div>
         </motion.section>
 
-        {/* Pricing section placeholder */}
+        {/* Pricing */}
         <motion.section
           id="pricing"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="pb-20"
+          transition={{ delay: 0.6 }}
+          className="mx-auto max-w-6xl px-6 pb-20"
         >
           <div className="rounded-[14px] border border-[#1e1e2a] bg-[#111116] p-8 text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7c3aed]/20 text-[#a78bfa] text-[12px] font-semibold mb-4">
-              <span>✨</span> Free forever
+              Free forever
             </div>
             <h2 className="text-[24px] font-bold text-white tracking-tight font-display mb-2">
               No pricing, no limits
@@ -254,6 +227,21 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Create Meeting Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="New meeting"
+      >
+        <p className="text-[13px] text-[#71717a] mb-5">
+          Takes 30 seconds to set up.
+        </p>
+        <CreateMeetingForm onSubmit={handleCreateMeeting} isLoading={isCreating} />
+        <p className="text-center text-[11px] text-[#71717a] mt-5">
+          Session expires in 48 hours &middot; No account required
+        </p>
+      </Modal>
     </div>
   );
 }
