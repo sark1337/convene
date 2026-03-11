@@ -4,14 +4,20 @@
 
 :root {
   /* ================================
-   * PRIMARY - Vibrant Violet (from design.pen)
+   * DARK THEME (from convene.pen)
    * ================================ */
-  --primary: #7C3AED;
-  --primary-light: #A78BFA;
-  --primary-soft: #EDE9FE;
-  --primary-dark: #5B21B6;
+  --bg: #09090b;
+  --surface: #111116;
+  --primary: #7c3aed;
+  --primary-400: #a78bfa;
+  --teal: #14b8a6;
+  --text: #e8eaf0;
+  --muted: #71717a;
+  --border: #1e1e2a;
+  --input-bg: #18181f;
+  --input-border: #2a2a3a;
 
-  /* Extended primary scale for Tailwind utilities */
+  /* Primary - Vibrant Violet */
   --primary-50: #F5F3FF;
   --primary-100: #EDE9FE;
   --primary-200: #DDD6FE;
@@ -23,35 +29,19 @@
   --primary-800: #4C1D95;
   --primary-900: #2E1065;
 
-  /* ================================
-   * ACCENT COLORS (from design.pen)
-   * ================================ */
-  --teal: #14B8A6;
-  --teal-soft: #CCFBF1;
-  --pink: #F472B6;
-  --pink-soft: #FCE7F3;
-
-  /* ================================
-   * BACKGROUNDS & SURFACES (from design.pen)
-   * ================================ */
-  --background: #FFFFFF;
-  --foreground: #18181B;
-  --card: #F4F4F5;
-  --elevated: #E4E4E7;
-  --border: #E4E4E7;
-  --muted-foreground: #71717A;
-
-  /* ================================
-   * TEXT HIERARCHY (from design.pen)
-   * ================================ */
-  --text-primary: #18181B;
-  --text-secondary: #71717A;
-  --text-tertiary: #A1A1AA;
+  /* Tailwind compat */
+  --background: #09090b;
+  --foreground: #e8eaf0;
+  --card: #111116;
+  --elevated: #18181f;
+  --border-tailwind: #1e1e2a;
+  --muted-foreground: #71717a;
+  --text-primary: #e8eaf0;
+  --text-secondary: #71717a;
+  --text-tertiary: #a1a1aa;
   --text-on-primary: #FFFFFF;
 
-  /* ================================
-   * SEMANTIC - Status Colors
-   * ================================ */
+  /* Semantic - Status Colors */
   --success: #10B981;
   --success-light: #D1FAE5;
   --warning: #F59E0B;
@@ -61,74 +51,47 @@
   --info: #3B82F6;
   --info-light: #DBEAFE;
 
-  /* ================================
-   * HEATMAP - Availability Colors
-   * ================================ */
-  --heatmap-0: #F3F4F6;
-  --heatmap-25: #D1FAE5;
-  --heatmap-50: #6EE7B7;
+  /* HEATMAP - Availability Colors */
+  --heatmap-0: #1e1e2a;
+  --heatmap-25: #2d3a3a;
+  --heatmap-50: #14b8a6;
   --heatmap-75: #34D399;
   --heatmap-100: #10B981;
 
-  /* ================================
-   * TYPOGRAPHY
-   * ================================ */
+  /* TYPOGRAPHY */
   --font-display: 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Inter', sans-serif;
 
-  /* ================================
-   * BORDER RADIUS (pillowy aesthetic)
-   * ================================ */
+  /* BORDER RADIUS */
   --radius-sm: 0.5rem;       /* 8px */
-  --radius-md: 0.75rem;      /* 12px */
-  --radius-lg: 1rem;         /* 16px - inputs */
-  --radius-xl: 1.25rem;      /* 20px - cards */
-  --radius-2xl: 1.5rem;      /* 24px - hero cards, buttons */
-  --radius-3xl: 2.25rem;     /* 36px - tab bar pill */
-  --radius-full: 9999px;     /* pills, avatars */
+  --radius-md: 0.625rem;     /* 10px */
+  --radius-lg: 0.875rem;     /* 14px */
+  --radius-xl: 1rem;         /* 16px */
+  --radius-2xl: 1.5rem;      /* 24px */
+  --radius-3xl: 2.25rem;     /* 36px */
+  --radius-full: 9999px;
 
-  /* ================================
-   * SHADOW SYSTEM
-   * ================================ */
-  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.06);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.15);
-  --shadow-primary: 0 10px 25px -5px rgb(124 58 237 / 0.25);
-  --shadow-primary-lg: 0 20px 40px -10px rgb(124 58 237 / 0.3);
+  /* SHADOWS */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+  --shadow-primary: 0 10px 25px -5px rgb(124 58 237 / 0.35);
+  --shadow-primary-lg: 0 20px 40px -10px rgb(124 58 237 / 0.4);
 
   /* Focus */
   --focus-ring: 2px solid var(--primary);
   --focus-ring-offset: 2px;
-  --shadow-focus: 0 0 0 3px rgb(124 58 237 / 0.3);
+  --shadow-focus: 0 0 0 3px rgb(124 58 237 / 0.35);
 
-  /* ================================
-   * ANIMATION TIMING
-   * ================================ */
+  /* ANIMATION */
   --duration-fast: 150ms;
   --duration-normal: 250ms;
   --duration-slow: 350ms;
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* ====================================
- * DARK MODE
- * ==================================== */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0A0A0A;
-    --foreground: #FAFAFA;
-    --card: #1C1C1E;
-    --elevated: #2C2C2E;
-    --border: #38383A;
-    --muted-foreground: #A1A1AA;
-    --text-primary: #FAFAFA;
-    --text-secondary: #A1A1AA;
-    --text-tertiary: #71717A;
-  }
 }
 
 /* ====================================
@@ -147,7 +110,17 @@
   --color-primary-800: #4C1D95;
   --color-primary-900: #2E1065;
 
-  /* Neutral - Zinc family (matches design.pen text colors) */
+  /* Theme colors from convene.pen */
+  --color-bg: #09090b;
+  --color-surface: #111116;
+  --color-teal: #14b8a6;
+  --color-text: #e8eaf0;
+  --color-muted: #71717a;
+  --color-border: #1e1e2a;
+  --color-input-bg: #18181f;
+  --color-input-border: #2a2a3a;
+
+  /* Neutral - Zinc family */
   --color-neutral-50: #FAFAFA;
   --color-neutral-100: #F4F4F5;
   --color-neutral-200: #E4E4E7;
@@ -168,14 +141,6 @@
   --color-teal-500: #14B8A6;
   --color-teal-600: #0D9488;
 
-  /* Accent: Pink */
-  --color-pink-50: #FDF2F8;
-  --color-pink-100: #FCE7F3;
-  --color-pink-200: #FBCFE8;
-  --color-pink-300: #F9A8D4;
-  --color-pink-400: #F472B6;
-  --color-pink-500: #EC4899;
-
   /* Semantic */
   --color-success: #10B981;
   --color-success-light: #D1FAE5;
@@ -187,27 +152,27 @@
   --color-info-light: #DBEAFE;
 
   /* Heatmap */
-  --color-heatmap-0: #F3F4F6;
-  --color-heatmap-25: #D1FAE5;
-  --color-heatmap-50: #6EE7B7;
+  --color-heatmap-0: #1e1e2a;
+  --color-heatmap-25: #2d3a3a;
+  --color-heatmap-50: #14b8a6;
   --color-heatmap-75: #34D399;
   --color-heatmap-100: #10B981;
 
   /* Shadows */
-  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.06);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
-  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.15);
-  --shadow-primary: 0 10px 25px -5px rgb(124 58 237 / 0.25);
-  --shadow-primary-lg: 0 20px 40px -10px rgb(124 58 237 / 0.3);
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+  --shadow-primary: 0 10px 25px -5px rgb(124 58 237 / 0.35);
+  --shadow-primary-lg: 0 20px 40px -10px rgb(124 58 237 / 0.4);
 
   /* Border radius */
   --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
   --radius-3xl: 2.25rem;
   --radius-full: 9999px;
@@ -229,8 +194,8 @@ body {
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-body), 'Inter', sans-serif;
 }
 
@@ -274,8 +239,8 @@ textarea:focus-visible {
 
 @media (prefers-contrast: high) {
   :root {
-    --border: #000000;
-    --muted-foreground: #000000;
+    --border: #ffffff;
+    --muted-foreground: #ffffff;
   }
   button, a, input, select {
     border: 2px solid currentColor;
@@ -374,7 +339,7 @@ textarea:focus-visible {
   left: 0;
   z-index: 10;
   background: var(--card);
-  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
 }
 
 .grid-cell:focus {
